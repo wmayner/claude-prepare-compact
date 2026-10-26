@@ -1,0 +1,6 @@
+{
+  "name": "prepare-compact",
+  "owner": { "name": "Will Mayner" },
+  "description": "A handoff note that carries a session's context across compaction.",
+  "plugins": [{ "name": "prepare-compact", "source": "./" }]
+}

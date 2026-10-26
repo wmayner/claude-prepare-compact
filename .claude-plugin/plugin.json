@@ -1,0 +1,10 @@
+{
+  "name": "prepare-compact",
+  "version": "0.1.0",
+  "description": "Before compacting, Claude writes a handoff note for its post-compaction self; a SessionStart hook loads it right after the summary.",
+  "author": { "name": "Will Mayner" },
+  "homepage": "https://github.com/wmayner/prepare-compact",
+  "repository": "https://github.com/wmayner/prepare-compact",
+  "license": "MIT",
+  "keywords": ["compaction", "context", "handoff"]
+}
