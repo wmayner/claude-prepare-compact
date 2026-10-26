@@ -27,6 +27,9 @@ out="$(CLAUDE_CODE_SESSION_ID=s1 bash "$write" "$body")"
 check "write saves the note under the session id" '[ -f "$dir/s1.md" ] && [[ $out == WROTE* ]]'
 
 CLAUDE_CODE_SESSION_ID=s2 bash "$write" "$body" > /dev/null
+printf 'from stdin\n' | CLAUDE_CODE_SESSION_ID=s4 bash "$write" > /dev/null
+check "write reads the note from standard input" 'grep -q "from stdin" "$dir/s4.md"'
+
 check "a second session gets its own note" '[ -f "$dir/s1.md" ] && [ -f "$dir/s2.md" ]'
 
 env -u CLAUDE_CODE_SESSION_ID bash "$write" "$body" > /dev/null 2>&1

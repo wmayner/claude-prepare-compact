@@ -32,10 +32,12 @@ Leave out raw tool output, file contents, step-by-step logs, and anything the re
 
 ## Save it
 
-Write the note to `next-prompt.md` in your scratchpad directory (or a temp directory if there is no scratchpad), then run:
+Save the note by passing it to the helper on standard input, in a single Bash command:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/skills/prepare-compact/write-handoff.sh" <path to the note>
+bash "${CLAUDE_PLUGIN_ROOT}/skills/prepare-compact/write-handoff.sh" <<'END_OF_HANDOFF'
+<the note>
+END_OF_HANDOFF
 ```
 
 It prints `WROTE <path>` when the note is saved. Tell the user it is ready and that they only need to type `/compact`, with no argument; the note is loaded right after the summary. Running `/prepare-compact` again before compacting replaces the note. A note written more than two hours before the compaction is not loaded, because the work has likely moved on.
