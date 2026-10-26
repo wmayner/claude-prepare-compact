@@ -21,7 +21,7 @@ You can steer the note with text after the command, for example `/prepare-compac
 In Claude Code:
 
 ```
-/plugin marketplace add wmayner/prepare-compact
+/plugin marketplace add wmayner/claude-prepare-compact
 /plugin install prepare-compact@prepare-compact
 ```
 
