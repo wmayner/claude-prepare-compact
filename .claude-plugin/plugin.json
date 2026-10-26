@@ -1,6 +1,6 @@
 {
   "name": "prepare-compact",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Before compacting, Claude writes a handoff note for its post-compaction self; a SessionStart hook loads it right after the summary.",
   "author": { "name": "Will Mayner" },
   "homepage": "https://github.com/wmayner/claude-prepare-compact",
