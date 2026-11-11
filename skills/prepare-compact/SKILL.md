@@ -22,6 +22,9 @@ Each decision with its reason and who made it, and the options turned down and w
 ### Open threads
 Promises you made, questions waiting on the user, things to check, and anything left half done.
 
+### What we know, and how well
+Only when the work has findings (experiments, debugging, audits). Each result in a line: measured (with its file and how much data is behind it), suspected, or ruled out, so that a guess doesn't come back after the compaction as a finding. Any output that must not be used, with the reason. Each departure from the agreed plan that the final report must state.
+
 ### How the user works
 Preferences and corrections the user gave in this session, and lessons learned the hard way. Keep the lesson, not the story of the attempt.
 

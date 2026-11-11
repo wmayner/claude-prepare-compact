@@ -9,6 +9,7 @@ Run `/prepare-compact` before you compact. Claude still has the whole conversati
 - **Where we are:** the task, what is done, what is committed or only local, what is running, and the next step.
 - **Decisions and why:** each decision with its reason, and the options turned down.
 - **Open threads:** promises, questions waiting on you, and work left half done.
+- **What we know, and how well:** when the work has findings, each result as measured, suspected or ruled out, and any output that must not be used.
 - **How the user works:** preferences and corrections you gave during the session.
 - **Where to look:** details to look up in the full transcript instead of carrying them in the note.
 
