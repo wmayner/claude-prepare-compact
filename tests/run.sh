@@ -60,5 +60,67 @@ old="$dir/old.consumed-20200101T000000Z.md"
 hook_input s9 compact | bash "$load" > /dev/null
 check "consumed notes older than 30 days are deleted" '[ ! -f "$old" ]'
 
+# --- handoff-on-stop.sh
+
+stop="$root/hooks/handoff-on-stop.sh"
+
+# A transcript whose last reply read $2 cache tokens; $3 adds a later subagent
+# or synthetic line that must be ignored.
+transcript() {
+  t="$CLAUDE_CONFIG_DIR/$1.jsonl"
+  printf '{"type":"user","message":{"role":"user","content":"hi"}}\n' > "$t"
+  printf '{"type":"assistant","message":{"content":[{"type":"text","text":"x \\"usage\\":{\\"input_tokens\\":999999}"}],"usage":{"input_tokens":3,"cache_creation_input_tokens":1000,"cache_read_input_tokens":%s,"output_tokens":50,"iterations":[{"input_tokens":3}]}}}\n' "$2" >> "$t"
+  [ -n "${3:-}" ] && printf '%s\n' "$3" >> "$t"
+  echo "$t"
+}
+
+stop_input() {
+  printf '{"session_id":"%s","transcript_path":"%s","cwd":"/p","hook_event_name":"Stop","stop_hook_active":%s}' "$1" "$2" "${3:-false}"
+}
+
+big="$(transcript big 150000)"
+small="$(transcript small 20000)"
+
+out="$(stop_input s20 "$big" | bash "$stop")"
+check "stop does nothing unless PREPARE_COMPACT_ON_STOP=1" '[ -z "$out" ]'
+
+export PREPARE_COMPACT_ON_STOP=1
+
+out="$(stop_input s20 "$big" | bash "$stop")"
+check "stop asks for a note when the context is large and there is none" '[[ $out == *"\"decision\":\"block\""* ]] && [[ $out == *"151k tokens"* ]] && [[ $out == *"missing"* ]]'
+
+out="$(stop_input s20 "$big" true | bash "$stop")"
+check "stop never asks twice in a row" '[ -z "$out" ]'
+
+out="$(stop_input s20 "$small" | bash "$stop")"
+check "stop does nothing when the context is small" '[ -z "$out" ]'
+
+out="$(stop_input s20 "$small" | PREPARE_COMPACT_ON_STOP_TOKENS=10000 bash "$stop")"
+check "the token threshold can be set" '[[ $out == *"block"* ]]'
+
+printf 'note\n' | CLAUDE_CODE_SESSION_ID=s20 bash "$write" > /dev/null
+out="$(stop_input s20 "$big" | bash "$stop")"
+check "stop does nothing when the note is recent" '[ -z "$out" ]'
+
+touch -t 202001010000 "$dir/s20.md"
+out="$(stop_input s20 "$big" | bash "$stop")"
+check "stop asks again when the note is old" '[[ $out == *"block"* ]] && [[ $out == *"more than 30 minutes old"* ]]'
+
+out="$(stop_input s20 "$big" | PREPARE_COMPACT_ON_STOP_MINUTES=99999999 bash "$stop")"
+check "the age limit can be set" '[ -z "$out" ]'
+
+rm -f "$dir/s20.md"; : > "$dir/s20.consumed-20990101T000000Z.md"
+out="$(stop_input s20 "$big" | bash "$stop")"
+check "a note just loaded after compaction counts as recent" '[ -z "$out" ]'
+
+side="$(transcript side 150000 '{"type":"assistant","isSidechain":true,"message":{"usage":{"input_tokens":1,"cache_read_input_tokens":5}}}')"
+out="$(stop_input s21 "$side" | bash "$stop")"
+check "subagent replies are ignored when reading the context size" '[[ $out == *"151k tokens"* ]]'
+
+out="$(stop_input s21 /nonexistent.jsonl | bash "$stop")"
+check "stop does nothing without a transcript" '[ -z "$out" ]'
+
+unset PREPARE_COMPACT_ON_STOP
+
 echo
 [ "$failures" -eq 0 ] && echo "all tests passed" || { echo "$failures failed"; exit 1; }

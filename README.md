@@ -9,6 +9,7 @@ Run `/prepare-compact` before you compact. Claude still has the whole conversati
 - **Where we are:** the task, what is done, what is committed or only local, what is running, and the next step.
 - **Decisions and why:** each decision with its reason, and the options turned down.
 - **Open threads:** promises, questions waiting on you, and work left half done.
+- **What we know, and how well:** when the work has findings, each result as measured, suspected or ruled out, and any output that must not be used.
 - **How the user works:** preferences and corrections you gave during the session.
 - **Where to look:** details to look up in the full transcript instead of carrying them in the note.
 
@@ -35,6 +36,22 @@ The plugin needs `bash`, so it runs on macOS, Linux and WSL.
 - Used notes are kept in the same folder for 30 days, in case you want to reread one, and then deleted.
 
 Nothing happens on automatic compactions unless you ran `/prepare-compact` first. To shape what the automatic summary keeps, add a section headed "Compact instructions" to your `CLAUDE.md`. The compactor reads it.
+
+## Keep the note current in long sessions (optional)
+
+Claude Code can compact a session on its own, for example when the session has been idle long enough for its prompt cache to expire. No one runs `/prepare-compact` first, so there is no note to load. You can turn on a `Stop` hook that keeps a recent note on hand for these compactions. When Claude finishes a turn, the hook checks two things: whether the context holds at least 100,000 tokens, and whether the session's note is missing or more than 30 minutes old. If both are true, it asks Claude to update the note before stopping. Claude does this in one short extra turn, while the conversation is still cached. The hook never asks twice in a row, and a note loaded after a compaction counts as recent.
+
+The hook is off by default. To turn it on for one project only, add the setting to that project's `.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "PREPARE_COMPACT_ON_STOP": "1"
+  }
+}
+```
+
+To change the limits, also set `PREPARE_COMPACT_ON_STOP_TOKENS` (default `100000`) or `PREPARE_COMPACT_ON_STOP_MINUTES` (default `30`). The hook reads the context size from the token counts of the last reply in the session's transcript.
 
 ## Develop
 
