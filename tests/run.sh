@@ -63,6 +63,8 @@ check "consumed notes older than 30 days are deleted" '[ ! -f "$old" ]'
 # --- handoff-on-stop.sh
 
 stop="$root/hooks/handoff-on-stop.sh"
+# Start from the defaults, whatever the calling shell has set.
+unset PREPARE_COMPACT_ON_STOP PREPARE_COMPACT_ON_STOP_TOKENS PREPARE_COMPACT_ON_STOP_MINUTES
 
 # A transcript whose last reply read $2 cache tokens; $3 adds a later subagent
 # or synthetic line that must be ignored.
