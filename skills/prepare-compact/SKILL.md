@@ -43,4 +43,4 @@ bash "${CLAUDE_PLUGIN_ROOT}/skills/prepare-compact/write-handoff.sh" <<'END_OF_H
 END_OF_HANDOFF
 ```
 
-It prints `WROTE <path>` when the note is saved. Tell the user it is ready and that they only need to type `/compact`, with no argument; the note is loaded right after the summary. Running `/prepare-compact` again before compacting replaces the note. A note written more than two hours before the compaction is not loaded, because the work has likely moved on.
+It prints `WROTE <path>` when the note is saved. Tell the user it is ready and that they only need to type `/compact`, with no argument; the note is loaded right after the summary. If the plugin's Stop hook asked you for the note, the user didn't ask to compact: say in one short line that the note is updated, and don't mention `/compact`. Running `/prepare-compact` again before compacting replaces the note. A note written more than two hours before the compaction is not loaded, because the work has likely moved on.
